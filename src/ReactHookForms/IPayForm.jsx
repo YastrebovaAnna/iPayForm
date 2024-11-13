@@ -1,115 +1,54 @@
-import {useForm} from "react-hook-form";
+import {InputField} from '../components/fields/InputField.jsx'
+import {SelectField} from '../components/fields/SelectField.jsx'
+import {CheckboxField} from '../components/fields/CheckboxField.jsx'
+import {TextAreaField} from '../components/fields/TextAreaField.jsx'
+import {Section} from '../components/Section.jsx'
+import {useForm} from 'react-hook-form';
+import {paymentOptions} from '../data/data.js'
+import './IPayForm.css';
 
-const paymentOptions = [
-    {value: 'utilities', label: 'Комунальні послуги (ОСББ, ЖБК, світло, вода, електроенергія, дом...)'},
-    {value: 'internet', label: 'Оплата Інтернету'},
-];
+
 const IPayForm = () => {
     const {register, handleSubmit} = useForm();
-    const onSubmit = (data) => console.log("Form Submitted Data:", data)
-    return <form noValidate autoComplete="off" onSubmit={handleSubmit(onSubmit)}>
-        <input
-            type="text"
-            placeholder="Введіть ЄДРПОУ чи РНОКПП"
-            {...register("target_edrpou")}
-        />
-        <label htmlFor="target_edrpou">ЄДРПОУ або РНОКПП</label>
-        <br/>
+    const onSubmit = (data) => console.log("Form Submitted Data:", data);
 
-        <input
-            type="text"
-            placeholder="Введіть назву одержувача"
-            {...register("target_fio")}
-        />
-        <label htmlFor="target_edrpou">Назва одержувача</label>
-        <br/>
+    return (
+        <form noValidate autoComplete="off" onSubmit={handleSubmit(onSubmit)}>
+            <Section title="Одержувач">
+                <InputField id="target_edrpou" label="ЄДРПОУ або РНОКПП" placeholder="Введіть ЄДРПОУ чи РНОКПП"
+                            register={register}/>
+                <InputField id="target_fio" label="Назва одержувача" placeholder="Введіть назву одержувача"
+                            register={register}/>
+                <InputField id="target_rr" label="Рахунок IBAN" placeholder="Введіть IBAN рахунок отримувача"
+                            register={register}/>
+            </Section>
 
-        <input
-            type="text"
-            placeholder="Введіть IBAN рахунок отримувача"
-            {...register("target_rr")}
-        />
-        <label htmlFor="target_edrpou">Рахунок IBAN</label>
-        <br/>
+            <Section title="Категорія платежу">
+                <CheckboxField id="budget_payment" label="Бюджетний платіж"
+                               sublabel="(Податки, штрафи та інші платежі до бюджету)" register={register}/>
+                <SelectField id="paymentType" options={paymentOptions} register={register}
+                             placeholder="Select Payment Type"/>
+                <TextAreaField id="form_desc" label="Призначення платежу" placeholder="Вкажіть призначення переказу"
+                               register={register}/>
+            </Section>
 
-        <input
-            id="checkbox-budget"
-            type="checkbox"
-            {...register("budget_payment")}
-        />
-        <label htmlFor="checkbox-budget">
-            <span>Бюджетний платіж</span>
-            <span>(Податки, штрафи та інші платежі до бюджету)</span>
-        </label>
-        <br/>
+            <Section title="Відправник">
+                <InputField id="sender_fio" label="ПІБ відправника" placeholder="Прізвище Ім'я По-батькові"
+                            register={register}/>
+                <InputField id="sender_phone" label="Номер телефону" placeholder="Номер телефону" register={register}/>
+                <InputField id="invoice" label="Сума" placeholder="10 - 29 000" register={register}/>
+            </Section>
 
-        <select {...register('paymentType')}>
-            <option value="">Select Payment Type</option>
-            {paymentOptions.map((option) => (
-                <option key={option.value} value={option.value}>
-                    {option.label}
-                </option>
-            ))}
-        </select>
-        <br/>
+            <Section title="Карткові дані">
+                <InputField id="sender_card_pan" label="Номер Картки" placeholder="Номер картки відправника"
+                            register={register}/>
+                <InputField id="sender_card_exp" label="Термін дії" placeholder="MM/YY" register={register}/>
+                <InputField id="sender_card_cvv" label="CVV" placeholder="CVV" register={register}/>
+            </Section>
 
-        <textarea
-            placeholder="Вкажіть призначення переказу"
-            {...register("form_desc")}
-        />
-        <label htmlFor="form_desc">Призначення платежу</label>
-        <br/>
+            <button type="submit">Submit</button>
+        </form>
+    );
+};
 
-        <input
-            type="text"
-            placeholder="Прізвище Ім'я По-батькові"
-            {...register("sender_fio")}
-        />
-        <label htmlFor="form_desc">ПІБ відправника</label>
-        <br/>
-
-        <input
-            type="text"
-            placeholder="Номер телефону"
-            {...register("sender_phone")}
-        />
-        <label htmlFor="form_desc">Номер телефону</label>
-        <br/>
-
-        <input
-            type="text"
-            placeholder="10 - 29 000"
-            {...register("invoice")}
-        />
-        <label htmlFor="invoice">Сума</label>
-        <br/>
-
-        <input
-            type="text"
-            placeholder="Номер картки відправника"
-            {...register("sender_card_pan")}
-        />
-        <label htmlFor="invoice">Номер Картки</label>
-        <br/>
-
-        <input
-            type="text"
-            placeholder="MM/YY"
-            {...register("sender_card_exp")}
-        />
-        <label htmlFor="invoice">Термін дії</label>
-        <br/>
-
-        <input
-            type="text"
-            placeholder="CVV"
-            {...register("sender_card_cvv")}
-        />
-        <label htmlFor="invoice">CVV</label>
-        <br/>
-
-        <button type="submit">Submit</button>
-    </form>
-}
-
-export {IPayForm}
+export {IPayForm};
