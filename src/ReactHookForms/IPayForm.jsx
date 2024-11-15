@@ -6,14 +6,28 @@ import {Section} from '../components/Section.jsx'
 import {useForm} from 'react-hook-form';
 import {yupResolver} from "@hookform/resolvers/yup";
 import {validationSchema} from "./validationSchema.js";
-import {paymentOptions} from '../data/data.js'
+import {budgetPaymentOptions, defaultValues, nonBudgetPaymentOptions} from '../data/data.js'
 import './IPayForm.css';
 
 const IPayForm = () => {
-    const {register, handleSubmit, formState: {errors}} = useForm({
-        resolver: yupResolver(validationSchema)
+    const {register, handleSubmit, formState: {errors, isSubmitting}, watch} = useForm({
+        resolver: yupResolver(validationSchema),
+        mode: "onBlur",
+        defaultValues,
     });
-    const onSubmit = (data) => console.log("Form Submitted Data:", data);
+
+    const isBudgetPayment = watch("budget_payment");
+    const selectedPaymentType = watch("paymentType");
+
+    const paymentOptions = isBudgetPayment ? budgetPaymentOptions : nonBudgetPaymentOptions;
+    const selectedOption = paymentOptions.find(option => option.value === selectedPaymentType);
+    const dynamicPlaceholder = selectedOption ? selectedOption.placeholder : "Вкажіть призначення переказу";
+
+    const onSubmit = async (data) => {
+        console.log("Form Submitted Data:", data);
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    };
 
     return (
         <form noValidate autoComplete="off" onSubmit={handleSubmit(onSubmit)}>
@@ -27,12 +41,26 @@ const IPayForm = () => {
             </Section>
 
             <Section title="Категорія платежу">
-                <CheckboxField id="budget_payment" label="Бюджетний платіж"
-                               sublabel="(Податки, штрафи та інші платежі до бюджету)" register={register}/>
-                <SelectField id="paymentType" options={paymentOptions} register={register}
-                             placeholder="Select Payment Type" errors={errors}/>
-                <TextAreaField id="form_desc" label="Призначення платежу" placeholder="Вкажіть призначення переказу"
-                               register={register} errors={errors}/>
+                <CheckboxField
+                    id="budget_payment"
+                    label="Бюджетний платіж"
+                    sublabel="(Податки, штрафи та інші платежі до бюджету)"
+                    register={register}
+                />
+                <SelectField
+                    id="paymentType"
+                    options={isBudgetPayment ? budgetPaymentOptions : nonBudgetPaymentOptions}
+                    register={register}
+                    placeholder="Select Payment Type"
+                    errors={errors}
+                />
+                <TextAreaField
+                    id="form_desc"
+                    label="Призначення платежу"
+                    placeholder={dynamicPlaceholder}
+                    register={register}
+                    errors={errors}
+                />
             </Section>
 
             <Section title="Відправник">
@@ -51,7 +79,9 @@ const IPayForm = () => {
                 <InputField id="sender_card_cvv" label="CVV" placeholder="CVV" register={register} errors={errors}/>
             </Section>
 
-            <button type="submit">Submit</button>
+            <button type="submit" disabled={isSubmitting}>
+                {isSubmitting ? "Submitting..." : "Submit"}
+            </button>
         </form>
     );
 };

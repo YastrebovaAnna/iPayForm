@@ -2,6 +2,7 @@ import PropTypes from "prop-types";
 
 const InputField = ({id, label, type = "text", placeholder, register, errors}) => (
     <div className="input-container">
+        <label htmlFor={id} className="floating-label">{label}</label>
         <input
             id={id}
             type={type}
@@ -9,7 +10,6 @@ const InputField = ({id, label, type = "text", placeholder, register, errors}) =
             {...register(id)}
             aria-invalid={errors[id] ? "true" : "false"}
         />
-        <label htmlFor={id} className="floating-label">{label}</label>
         {errors[id] && <p className="error-message">{errors[id].message}</p>}
     </div>
 );
