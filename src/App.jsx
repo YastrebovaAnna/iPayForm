@@ -1,4 +1,4 @@
-import {IPayForm} from "./ReactHookForms/IPayForm.jsx";
+import {IPayForm} from "./components/forms/IPayForm.jsx";
 
 export default function App() {
     return (
